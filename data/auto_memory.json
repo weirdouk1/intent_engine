@@ -1,0 +1,18 @@
+{
+  "book flight to delhi": "flight_booking",
+  "i want to travel to mumbai tomorrow": "flight_info",
+  "canel my ticket": "cancel_ticket",
+  "what time does my flight depart": "flight_status",
+  "how much baggage weight can i carry": "baggage_info",
+  "yo whats the timing of my flight": "flight_delay",
+  "this app is very bad": "complaint",
+  "annoying": "complaint",
+  "book a flight": "flight_booking",
+  "cancel my ticket": "cancel_ticket",
+  "can i carry water bottle in flight": "baggage_info",
+  "i dont know what to do help me": "feedback",
+  "go to hell": "farewell",
+  "how can an app be his worse": "complaint",
+  "book a flight to vizag": "flight_booking",
+  "how much luggage can i carry": "baggage_info"
+}

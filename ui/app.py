@@ -1,68 +1,74 @@
 import sys
 import os
-
-# 🔥 FORCE ROOT PATH
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, ROOT_DIR)
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import streamlit as st
 from app.router import detect_intent
 
-st.set_page_config(page_title="Intent Recognition Engine", layout="centered")
+st.set_page_config(page_title="Intent Engine", layout="centered")
 
 st.title("🧠 Intent Recognition Engine")
-st.markdown("Enterprise-level Intent Mapping Demo")
+st.caption("Hybrid AI • Fast • Smart Routing")
 
 
-# 🔹 function to process query
+# 🔹 PROCESS FUNCTION
 def process_query():
-  query = st.session_state.query
+
+  query = st.session_state.get("query", "")
 
   if query.strip() == "":
     st.warning("Please enter a query")
     return
 
   result = detect_intent(query)
-
   st.session_state.result = result
 
 
-# 🔹 INPUT (ENTER triggers this)
+# 🔹 INPUT (NO on_change → avoids double execution ❌)
 st.text_input(
-  "Enter your query:",
-  key="query",
-  on_change=process_query  # 🔥 ENTER triggers this
+  "Type your query:",
+  key="query"
 )
 
-# 🔹 BUTTON (optional backup)
+
+# 🔹 BUTTON (ONLY trigger)
 if st.button("Detect Intent"):
   process_query()
 
 
-# 🔹 SHOW RESULT
+# 🔹 DISPLAY RESULTS
 if "result" in st.session_state:
+
   result = st.session_state.result
 
   st.divider()
 
-  col1, col2 = st.columns(2)
+  st.subheader("🧾 Results")
 
-  with col1:
-    st.metric("Intent", result["intent"])
-    st.metric("Method", result["method"])
+  for i, r in enumerate(result["results"], 1):
 
-  with col2:
-    st.metric("Latency (sec)", f"{result['latency']:.3f}")
-    st.metric(
-      "Similarity",
-      "N/A" if result["score"] is None else f"{result['score']:.3f}"
-    )
+    with st.container():
+      st.markdown(f"### 🔹 Intent {i}")
 
-  st.divider()
+      col1, col2 = st.columns(2)
 
-  st.subheader("Response")
-  st.success(result.get("response", f"Handled intent: {result['intent']}"))
+      with col1:
+        st.metric("Intent", r["intent"])
+        st.metric("Method", r["method"])
+
+      with col2:
+        st.metric(
+          "Score",
+          "N/A" if r["score"] is None else f"{r['score']:.3f}"
+        )
+
+      st.markdown(f"**Query part:** `{r['query']}`")
+
+      st.markdown("---")
+
+  # 🔹 LATENCY
+  st.success(f"⚡ Total Latency: {result['latency']:.3f} sec")
 
 
 st.markdown("---")
-st.caption("⚡ Built using Hybrid AI (Rule + Embedding + LLM)")
+st.caption("🚀 Hybrid: Rule + Fuzzy + Embedding + LLM")

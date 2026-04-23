@@ -1,6 +1,8 @@
 from sentence_transformers import SentenceTransformer
 
-model = SentenceTransformer("sentence-transformers/all-mpnet-base-v2")
+# 🔥 SWITCHED MODEL
+model = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
+
 
 def get_embedding(text):
-  return model.encode(text).tolist()
+  return model.encode(text, normalize_embeddings=True)

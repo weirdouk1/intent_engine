@@ -4,7 +4,7 @@ import os
 from intents.intent_phrases import INTENT_PHRASES
 from models.embedding_model import get_embedding
 
-DIMENSION = 768
+DIMENSION = 384
 
 index = faiss.IndexFlatL2(DIMENSION)
 intent_labels = []
@@ -41,11 +41,14 @@ def init_index():
 def search(vec, k=3):
   vec = np.array(vec).astype("float32")
 
-  faiss.normalize_L2(vec.reshape(1, -1))
+  D, I = index.search(np.array([vec]), k)
 
-  D, I = index.search(vec.reshape(1, -1), k)
+  results = []
+  for i in range(k):
+    idx = I[0][i]
+    if idx < len(intent_labels):
+      results.append((intent_labels[idx], float(D[0][i])))
 
-  return [(intent_labels[i], D[0][idx]) for idx, i in enumerate(I[0])]
-
+  return results
 
 init_index()

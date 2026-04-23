@@ -1,27 +1,34 @@
 from openai import AzureOpenAI
-from app.config import *
-from intents.intent_phrases import INTENT_PHRASES
+from app.config import AZURE_OPENAI_KEY, AZURE_OPENAI_ENDPOINT, LLM_MODEL
 
 client = AzureOpenAI(
   api_key=AZURE_OPENAI_KEY,
-  azure_endpoint=AZURE_OPENAI_ENDPOINT,
-  api_version="2024-02-15-preview"
+  api_version="2024-02-15-preview",
+  azure_endpoint=AZURE_OPENAI_ENDPOINT
 )
 
+
 def classify_intent(query):
+
   prompt = f"""
-  Classify the intent into one of these:
-  {INTENT_PHRASES}
+Classify the user query into one of the predefined intents.
 
-  Query: {query}
+Query: {query}
 
-  Return only intent name.
-  """
+Only return the intent name.
+"""
 
-  res = client.chat.completions.create(
-    model=LLM_MODEL,
-    messages=[{"role": "user", "content": prompt}],
-    temperature=0
-  )
+  try:
+    res = client.chat.completions.create(
+      model=LLM_MODEL,
+      messages=[{"role": "user", "content": prompt}],
+      temperature=0
+    )
 
-  return res.choices[0].message.content.strip()
+    return res.choices[0].message.content.strip()
+
+  except Exception as e:
+    print("LLM FAILED:", e)
+
+    # 🔥 IMPORTANT: no crash
+    return "fallback_intent"
