@@ -17,9 +17,7 @@ def init_index():
     print("Loading FAISS index...")
     index = faiss.read_index("faiss.index")
 
-    # 🔥 rebuild labels
     intent_labels.clear()
-
     for intent, phrases in INTENT_PHRASES.items():
       for _ in phrases:
         intent_labels.append(intent)
@@ -30,10 +28,8 @@ def init_index():
 
   for intent, phrases in INTENT_PHRASES.items():
     for phrase in phrases:
-      vec = get_embedding(phrase)
-      vec = np.array(vec).astype("float32")
+      vec = np.array(get_embedding(phrase)).astype("float32")
 
-      # 🔥 NORMALIZATION (IMPORTANT)
       faiss.normalize_L2(vec.reshape(1, -1))
 
       index.add(vec.reshape(1, -1))
@@ -42,15 +38,14 @@ def init_index():
   faiss.write_index(index, "faiss.index")
 
 
-def search(vec):
+def search(vec, k=3):
   vec = np.array(vec).astype("float32")
 
-  # 🔥 NORMALIZATION (IMPORTANT)
   faiss.normalize_L2(vec.reshape(1, -1))
 
-  D, I = index.search(vec.reshape(1, -1), 1)
+  D, I = index.search(vec.reshape(1, -1), k)
 
-  return intent_labels[I[0][0]], D[0][0]
+  return [(intent_labels[i], D[0][idx]) for idx, i in enumerate(I[0])]
 
 
 init_index()
